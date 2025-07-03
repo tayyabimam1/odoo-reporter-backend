@@ -1,13 +1,8 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flask_cors import CORS
 import os
-import json
-from dotenv import load_dotenv
 from odoo_reporter_local import OdooSubscriptionReporter
 from excel_exporter import create_excel_report_base64
-
-# Load environment variables
-load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
@@ -16,7 +11,7 @@ CORS(app)
 def health_check():
     return jsonify({"status": "Backend is running", "message": "Odoo Reporter API"})
 
-@app.route('/api/reports', methods=['GET'])
+@app.route('/api/reports')
 def get_reports():
     try:
         reporter = OdooSubscriptionReporter()
@@ -27,7 +22,7 @@ def get_reports():
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
-@app.route('/api/reports/excel', methods=['GET'])
+@app.route('/api/reports/excel')
 def get_excel_report():
     try:
         reporter = OdooSubscriptionReporter()
@@ -42,7 +37,3 @@ def get_excel_report():
         return jsonify({"error": str(e)}), 400
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
-
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
